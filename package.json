@@ -1,0 +1,14 @@
+{
+  "name": "k6-crocodiles",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "./tests"
+  },
+  "scripts": {
+    "test": "k6 run ./tests/crocodileTests.js"
+  },
+  "author": "Dariyank Sanquintin",
+  "license": "ISC"
+}
