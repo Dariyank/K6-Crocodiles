@@ -5,54 +5,68 @@ import { returnError } from '../utils/common.js'
 import { randomString } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
 export function createNewUser(url) {
-    let [localPart, domainPart] = userData.email.split("@");
-    let [domain, extension] = domainPart.split(".");
-    domain = domain + randomString(5);
-    let userEmail = localPart+"@"+domain+"."+extension;
-    
-    let data = {
-        username: userData.username + "-" + randomString(8), 
-        first_name: userData.firstname, 
-        lastname: userData.lastname, 
-        email: userEmail, 
-        password: userData.password
-    }
+	let [localPart, domainPart] = userData.email.split("@");
+	let [domain, extension] = domainPart.split(".");
+	domain = domain + randomString(5);
+	let userEmail = localPart+"@"+domain+"."+extension;
 
-    let res = http.post( (url+'/user/register/'), data );
+	let data = {
+		username: userData.username + "-" + randomString(8), 
+		first_name: userData.firstname, 
+		lastname: userData.lastname, 
+		email: userEmail, 
+		password: userData.password
+	}
 
-    let result = check(res, {
-        'The status is 201': (r) => res.status === 201,
-        'Status message is "201 Created"': (r) => r.status_text === "201 Created",
-        'Username is saved correctly': (r) => (r.body).includes(userData.username)
-    });
+	let res = http.post( (`${url}/user/register/`), data );
 
-    returnError(result, res);
+	let result = check(res, {
+		'The status is 201': (r) => res.status === 201,
+		'Status message is "201 Created"': (r) => r.status_text === "201 Created",
+		'Username is saved correctly': (r) => (r.body).includes(data.username)
+	});
 
-    sleep(1);
+	returnError(result, res);
+
+	sleep(1);
+
+	return {
+		username: data.username, 
+		password: data.password
+	};
 }
 
 export function createExistingUser(url){
-    let data = {
-        username: "Dariyank", 
-        first_name: "Test", 
-        lastname: "Test", 
-        email: "example@test.com", 
-        password: "123456"
-    }
+	let data = {
+		username: "Dariyank", 
+		first_name: "Test", 
+		lastname: "Test", 
+		email: "example@test.com", 
+		password: "123456"
+	}
 
-    let res = http.post( (url+'/user/register/'), data );
+	let res = http.post( (`${url}/user/register/`), data );
 
-    let result = check(res, {
-        "Unable to create": (r) => r.status === 400,
-        "The Username already exist message appears": (r) => (r.body).includes("A user with that username already exists."),
-        "The Email already exist message appears": (r) => (r.body).includes("User with this email already exists!")
-    });
+	let result = check(res, {
+		"Unable to create": (r) => r.status === 400,
+		"The Username already exist message appears": (r) => (r.body).includes("A user with that username already exists."),
+		"The Email already exist message appears": (r) => (r.body).includes("User with this email already exists!")
+	});
 
-    returnError(result, res);
+	returnError(result, res);
 
-    sleep(1);
+	sleep(1);
 }
 
-export function loginToAccount(url){
-    
+export function loginToAccount(url, data){
+
+	let res = http.post(`${url}/auth/token/login/`, data);
+
+	check(res, {
+		'The user is logged in with Status code 200': (r) => r.status === 200,
+		'The status code text is OK': (r) => r.status_text ===  "200 OK",
+		'The response has access token': (r) => r.json().access !== undefined && typeof r.json().access === "string"
+	});
+
+	return res.json().access;
 }
