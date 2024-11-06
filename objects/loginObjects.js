@@ -18,7 +18,7 @@ export function createNewUser(url) {
 		password: userData.password
 	}
 
-	let res = http.post( (`${url}/user/register/`), data );
+	let res = http.post( (`${url}/user/register/`), data);
 
 	let result = check(res, {
 		'The status is 201': (r) => res.status === 201,
@@ -45,13 +45,15 @@ export function createExistingUser(url){
 		password: "123456"
 	}
 
-	let res = http.post( (`${url}/user/register/`), data );
+	let res = http.post( (`${url}/user/register/`), data);
 
-	let result = check(res, {
-		"Unable to create": (r) => r.status === 400,
-		"The Username already exist message appears": (r) => (r.body).includes("A user with that username already exists."),
-		"The Email already exist message appears": (r) => (r.body).includes("User with this email already exists!")
-	});
+	let result = check(res,
+		{
+			"Unable to create": (r) => r.status === 400,
+			"The Username already exist message appears": (r) => (r.body).includes("A user with that username already exists."),
+			"The Email already exist message appears": (r) => (r.body).includes("User with this email already exists!")
+		}
+	);
 
 	returnError(result, res);
 
@@ -67,6 +69,21 @@ export function loginToAccount(url, data){
 		'The status code text is OK': (r) => r.status_text ===  "200 OK",
 		'The response has access token': (r) => r.json().access !== undefined && typeof r.json().access === "string"
 	});
+
+	return res.json().access;
+}
+
+export function loginToInvalidAccount(url, data){
+
+	let res = http.post(`${url}/auth/token/login/`, data);
+
+	let result = check(res, {
+		'The user is logged in with Status code 401': (r) => r.status === 401,
+		'The status code text is OK': (r) => r.status_text ===  "401 Unauthorized",
+		'The unauthorized message is provided': (r) => r.json().detail === "No active account found with the given credentials"
+	});
+
+	returnError(result, res);
 
 	return res.json().access;
 }
