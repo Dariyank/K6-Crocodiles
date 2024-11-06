@@ -23,12 +23,17 @@ export function createNewUser(url) {
 	let result = check(res, {
 		'The status is 201': (r) => res.status === 201,
 		'Status message is "201 Created"': (r) => r.status_text === "201 Created",
-		'Username is saved correctly': (r) => (r.body).includes(userData.username)
+		'Username is saved correctly': (r) => (r.body).includes(data.username)
 	});
 
 	returnError(result, res);
 
 	sleep(1);
+
+	return {
+		username: data.username, 
+		password: data.password
+	};
 }
 
 export function createExistingUser(url){
@@ -54,12 +59,8 @@ export function createExistingUser(url){
 }
 
 export function loginToAccount(url, data){
-	let data1 = {
-		username: data.userName,
-		password: data.password
-	}
 
-	let res = http.post(`${url}/auth/token/login/`, data1);
+	let res = http.post(`${url}/auth/token/login/`, data);
 
 	check(res, {
 		'The user is logged in with Status code 200': (r) => r.status === 200,
@@ -67,7 +68,5 @@ export function loginToAccount(url, data){
 		'The response has access token': (r) => r.json().access !== undefined && typeof r.json().access === "string"
 	});
 
-	let accessToken = res.json().access;
-
-	return accessToken;
+	return res.json().access;
 }

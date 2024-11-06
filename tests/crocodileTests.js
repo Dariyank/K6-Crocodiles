@@ -6,16 +6,31 @@ import { group } from 'k6';
 const baseURL = "https://test-api.k6.io";
 
 export const options = {
-    vus: 4,
-    duration: "25s",
-		thresholds: {
-			http_req_duration: ['p(95) < 4000'],
-	}
+	thresholds: {
+		http_req_duration: ['p(95) < 4000'],
+	},
+	scenarios: {
+    Login: {
+      exec: 'loginFlow',
+      executor: 'constant-vus',
+      vus: 4,
+      duration: "30s",
+    },
+    crocodileEdit: {
+      exec: 'crocodileTests',
+      executor: 'constant-vus',
+      vus: 10,
+      duration: "70s",
+    },
+  },
 } 
 
-export default function(){
+let data, token;
+
+export function loginFlow(){
+
 	group("Creating a new user", () => {
-		createNewUser(baseURL);
+		data = createNewUser(baseURL);
 	});
 
 	group("Create new user with existing info", () => {
@@ -23,12 +38,14 @@ export default function(){
 	});
 	
 	group("login with an existing user", () => {
-		let data = {
-			userName: "Dariyank",
-			password: "123456"
-		}
-		let token = loginToAccount(baseURL, data);
-	})
+		token = loginToAccount(baseURL, data);
+	});
+}
+
+export function crocodileTests(){
+	group("create a new crocodile", () => {
+		
+	});
 }
 
 export function handleSummary(data) {
