@@ -82,21 +82,44 @@ export function getNewCrocodile(url, token, crocodileInfo){
 	returnError(result, res);
 }
 
-export function editCrocodile(url, token, id){
-	let res = http.get(
-		`${url}/my/crocodiles/`,
+export function deleteCrocodile(url, token, crocoInfo){
+	let crocoId = crocoInfo.id;
+	crocoInfo.name+="Edited"
+	let res = http.put(
+		`${url}/my/crocodiles/${crocoId}/`,
+		JSON.stringify(crocoInfo), 
 		{
 			headers: {
-				Authorization: 'Bearer ' + token 
+				Authorization: 'Bearer ' + token,
+				'Content-Type': 'application/json'
 			}
 		}
 	);
 
 	let result = check(res, {
 		'Status is 200': (r) => r.status === 200,
-		'The crocodile sex is': (r) => r.json()[0].id === crocodileInfo.id,
-		'The crocodile name is this': (r) => r.json()[0].name === crocodileInfo.name,
-		'The crocodile birthday is': (r) => r.json()[0].date_of_birth === crocodileInfo.date_of_birth,
+		'The crocodile id is correct': (r) => r.json().id === crocoInfo.id,
+        'Crodile updated name is correct': (r) => r.json().name === crocoInfo.name
+	});
+
+	returnError(result, res);
+}
+
+export function editCrocodile(url, token, crocoInfo){
+	let crocoId = crocoInfo.id;
+	let res = http.del(
+		`${url}/my/crocodiles/${crocoId}/`,
+		null, 
+		{
+			headers: {
+				Authorization: 'Bearer ' + token
+			}
+		}
+	);
+
+	let result = check(res, {
+		'Crocodile deleted, status 204': (r) => r.status === 204,
+		'Status text is 204 No Content': (r) => r.status_text === '204 No Content'
 	});
 
 	returnError(result, res);
