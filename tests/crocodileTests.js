@@ -22,7 +22,7 @@ export const options = {
       exec: 'crocodileTests',
       executor: 'constant-vus',
       vus: 1,
-      duration: "30s",
+      duration: "40s",
 	  	startTime: '13s'
     },
   },
