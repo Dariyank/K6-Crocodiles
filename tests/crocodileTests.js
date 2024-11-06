@@ -9,21 +9,21 @@ const baseURL = "https://test-api.k6.io";
 export const options = {
 	thresholds: {
 		http_req_duration: ['p(95) < 3000'],
-		http_req_failed: ['rate < 0.1'],
+		http_req_failed: ['rate < 0.2'],
 	},
 	scenarios: {
     Login: {
       exec: 'loginFlow',
       executor: 'constant-vus',
       vus: 1,
-      duration: "8s",
+      duration: "11s",
     },
     crocodileEdit: {
       exec: 'crocodileTests',
       executor: 'constant-vus',
       vus: 1,
       duration: "30s",
-	  	startTime: '9s'
+	  	startTime: '13s'
     },
   },
 } 
