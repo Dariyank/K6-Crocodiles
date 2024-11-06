@@ -4,7 +4,7 @@ import crocoData from '../data/crocodileData.js';
 import { returnError } from '../utils/common.js'
 import { randomString } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
-export function createNewcrocodile(url, token){
+export function createNewCrocodile(url, token){
 	let croData = {
 		name: crocoData.name + randomString(5),
 		sex: crocoData.sex,
@@ -23,7 +23,6 @@ export function createNewcrocodile(url, token){
 
 	let result = check(res, {
 		'Crocodile was created correctly': (r) => r.status === 201,
-
 	});
     
 	returnError(result, res);
@@ -31,11 +30,31 @@ export function createNewcrocodile(url, token){
   sleep(1);
 
 	let newCrocodileInfo = {
-		name: res.json().id,
-		sex: res.json().name,
-		date_of_birth: res.json().age,
+		id: res.json().id,
+		name: res.json().name,
+		sex: res.json().sex,
+		date_of_birth: res.json().date_of_birth,
 	}
 
 	return newCrocodileInfo;
+}
 
+export function getNewCrocodile(url, token, crocodileInfo){
+	let res = http.get(
+		`${url}/my/crocodiles/`,
+		{
+			headers: {
+				Authorization: 'Bearer ' + token 
+			}
+		}
+	);
+
+	let result = check(res, {
+		'Status is 200': (r) => r.status === 200,
+		'The crocodile sex is': (r) => r.json()[0].id === crocodileInfo.id,
+		'The crocodile name is this': (r) => r.json()[0].name === crocodileInfo.name,
+		'The crocodile birthday is': (r) => r.json()[0].date_of_birth === crocodileInfo.date_of_birth,
+	});
+
+	returnError(result, res);
 }
