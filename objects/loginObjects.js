@@ -13,7 +13,7 @@ export function createNewUser(url) {
 	let data = {
 		username: userData.username + "-" + randomString(8), 
 		first_name: userData.firstname, 
-		lastname: userData.lastname, 
+		last_name: userData.lastname, 
 		email: userEmail, 
 		password: userData.password
 	}
