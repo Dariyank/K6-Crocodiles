@@ -82,7 +82,7 @@ export function getNewCrocodile(url, token, crocodileInfo){
 	returnError(result, res);
 }
 
-export function deleteCrocodile(url, token, crocoInfo){
+export function editCrocodile(url, token, crocoInfo){
 	let crocoId = crocoInfo.id;
 	crocoInfo.name+="Edited"
 	let res = http.put(
@@ -105,7 +105,7 @@ export function deleteCrocodile(url, token, crocoInfo){
 	returnError(result, res);
 }
 
-export function editCrocodile(url, token, crocoInfo){
+export function deleteCrocodile(url, token, crocoInfo){
 	let crocoId = crocoInfo.id;
 	let res = http.del(
 		`${url}/my/crocodiles/${crocoId}/`,
